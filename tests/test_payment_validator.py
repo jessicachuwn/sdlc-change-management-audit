@@ -79,3 +79,42 @@ def test_multiple_control_failures():
 
     assert result["status"] == "REJECTED"
     assert len(result["exceptions"]) == 3
+
+# Test 7: High-value payment without approval
+def test_high_value_without_finance_approval():
+    result = validate_payment(
+        vendor_id="V2001",
+        vendor_status="Active",
+        payment_amount=15000,
+        bank_approved=True,
+        finance_approved=False
+    )
+
+    assert result["status"] == "REJECTED"
+    assert "Finance approval required for high-value payment" in result["exceptions"]
+
+
+# Test 8: High-value payment with approval
+def test_high_value_with_finance_approval():
+    result = validate_payment(
+        vendor_id="V2002",
+        vendor_status="Active",
+        payment_amount=15000,
+        bank_approved=True,
+        finance_approved=True
+    )
+
+    assert result["status"] == "APPROVED"
+
+
+# Test 9: Payment exactly at threshold
+def test_payment_at_threshold():
+    result = validate_payment(
+        vendor_id="V2003",
+        vendor_status="Active",
+        payment_amount=10000,
+        bank_approved=True,
+        finance_approved=False
+    )
+
+    assert result["status"] == "APPROVED"

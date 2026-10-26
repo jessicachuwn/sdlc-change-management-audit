@@ -1,25 +1,35 @@
 
-def validate_payment(vendor_id, vendor_status, payment_amount, bank_approved):
+def validate_payment(
+    vendor_id,
+    vendor_status,
+    payment_amount,
+    bank_approved,
+    finance_approved=False
+):
     """
-    Simulated automated application control AP-001.
+    Simulated automated application control.
 
-    Validate a vendor payment against three business rules.
-    Returns a decision and the reasons for rejection.
+    AP-001: Basic vendor payment validation.
+    AP-002: High-value payment approval.
     """
 
     exceptions = []
 
-    # Control AP-001A: Vendor must be active
+    # AP-001A: Vendor must be active
     if vendor_status != "Active":
         exceptions.append("Vendor is not active")
 
-    # Control AP-001B: Payment amount must be positive
+    # AP-001B: Payment amount must be positive
     if payment_amount <= 0:
         exceptions.append("Payment amount must be greater than zero")
 
-    # Control AP-001C: Bank account must be approved
+    # AP-001C: Bank account must be approved
     if bank_approved is not True:
         exceptions.append("Vendor bank account is not approved")
+
+    # AP-002: High-value payment requires Finance approval
+    if payment_amount > 10000 and finance_approved is not True:
+        exceptions.append("Finance approval required for high-value payment")
 
     if exceptions:
         return {
@@ -35,12 +45,13 @@ def validate_payment(vendor_id, vendor_status, payment_amount, bank_approved):
     }
 
 
-# Simulated payment request
-payment = validate_payment(
-    vendor_id="V1001",
-    vendor_status="Active",
-    payment_amount=5000,
-    bank_approved=False
-)
+if __name__ == "__main__":
+    payment = validate_payment(
+        vendor_id="V1001",
+        vendor_status="Active",
+        payment_amount=15000,
+        bank_approved=True,
+        finance_approved=False
+    )
 
-print(payment)
+    print(payment)
